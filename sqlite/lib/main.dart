@@ -76,7 +76,6 @@ Future<void> main() async {
       where: 'id = ?',
       whereArgs: [dog.id],
     );
-
   }
 
   // DELETE DOG
@@ -90,7 +89,6 @@ Future<void> main() async {
       where: 'id = ?',
       whereArgs: [id],
     );
-
   }
 
 
