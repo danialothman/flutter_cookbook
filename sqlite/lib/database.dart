@@ -1,12 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'data_model.dart';
 
-class DogDatabase{
+class DogDatabase {
   static final DogDatabase instance = DogDatabase._init();
-
   static Database? _database;
-
   DogDatabase._init();
 
   // getter - ???
@@ -20,8 +20,8 @@ class DogDatabase{
   // initialize DB
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath,filePath);
-    
+    final path = join(dbPath, filePath);
+
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
@@ -38,13 +38,12 @@ class DogDatabase{
     ''');
   }
 
-
   // CRUD FUNCTIONS
   // CRUD FUNCTIONS
   // CRUD FUNCTIONS
 
   // INSERT DATA
-  Future<void> insertDog(Dog dog) async{
+  Future<void> insertDog(Dog dog) async {
     print('INSERT DOG Fn');
 
     // Get a reference to the database.
@@ -54,29 +53,30 @@ class DogDatabase{
     // `conflictAlgorithm` to use in case the same dog is inserted twice.
     //
     // In this case, replace any previous data.
-    await db.insert(
-        'dogs',
-        dog.toMap(),
+    await db.insert('dogs', dog.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   // READ DATA
   // A method that retrieves all the dogs from the dogs table.
-  Future <List<Dog>> dogs() async {
+  Future<List<Dog>> dogs() async {
     print('RETRIEVE DOGS Fn');
 
     // Get a reference to the database.
     final db = await database;
 
     // Query the table for all The Dogs.
-    final List<Map<String,dynamic>> maps = await db.query('dogs');
+    final List<Map<String, dynamic>> maps = await db.query('dogs');
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
-    return List.generate(maps.length, (i){
-      return Dog(id: maps[i]['id'], name: maps[i]['name'], age: maps[i]['age'],);
+    return List.generate(maps.length, (i) {
+      return Dog(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        age: maps[i]['age'],
+      );
     });
   }
-
 
   // UPDATE A DOG
   Future<void> updateDog(Dog dog) async {
@@ -92,7 +92,6 @@ class DogDatabase{
     );
   }
 
-
   // DELETE DOG
   Future<void> deleteDog(int id) async {
     print('DELETE DOG Fn');
@@ -106,11 +105,18 @@ class DogDatabase{
     );
   }
 
+  // DELETE ROWS, preserves table
+  Future<void> deleteRows() async {
+    print('DELETE ROWS');
+
+    final db = await database;
+
+    await db.execute('DELETE FROM dogs');
+  }
 
   // CLOSE db
   Future close() async {
     final db = await instance.database;
     db.close();
   }
-
 }
