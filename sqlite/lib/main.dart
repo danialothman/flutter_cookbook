@@ -138,67 +138,87 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: IntrinsicHeight(
           child: Padding(
-            padding: const EdgeInsets.only(top:8.0, bottom: 8.0, left: 16.0,right: 16.0),
+            padding: const EdgeInsets.only(
+                top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('SQFLITE',style: Theme.of(context).textTheme.headline4),
+                Text('BUILD LIST',
+                    style: Theme.of(context).textTheme.headline4),
+                buildList(),
+                const Divider(thickness: 2),
+                Text('SQFLITE', style: Theme.of(context).textTheme.headline4),
                 const Text('CREATE'),
                 SizedBox(
                   height: 50,
-                  child:
-                      ListView(
-                          scrollDirection: Axis.horizontal,
-                          children:  [
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: addFido, child: const Text('add Fido'))),
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: addGongo, child: const Text('add Gongo'))),
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: addLongo, child: const Text('add Longo'))),
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                                onPressed: addBongo, child: const Text('add Bongo'))),
+                  child: ListView(scrollDirection: Axis.horizontal, children: [
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                            onPressed: addFido, child: const Text('add Fido'))),
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                            onPressed: addGongo,
+                            child: const Text('add Gongo'))),
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                            onPressed: addLongo,
+                            child: const Text('add Longo'))),
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                            onPressed: addBongo,
+                            child: const Text('add Bongo'))),
                   ]),
                 ),
                 const Divider(thickness: 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                  Column(children: [const Text('READ'),
-                    ElevatedButton(
-                        onPressed: getDogsFromDB, child: const Text('Get List DB')),],),
-                  Column(children: [
-                    const Text('UPDATE'),
-                    ElevatedButton(
-                        onPressed: updateFido, child: const Text('update Fido')),
-                  ],),
-                    Column(children: [
-                      const Text('DELETE'),
-                      ElevatedButton(
-                          onPressed: deleteFido, child: const Text('delete Fido')),
-                    ],)
-                ],),
+                    Column(
+                      children: [
+                        const Text('READ'),
+                        ElevatedButton(
+                            onPressed: getDogsFromDB,
+                            child: const Text('Get List DB')),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text('UPDATE'),
+                        ElevatedButton(
+                            onPressed: updateFido,
+                            child: const Text('update Fido')),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text('DELETE'),
+                        ElevatedButton(
+                            onPressed: deleteFido,
+                            child: const Text('delete Fido')),
+                      ],
+                    )
+                  ],
+                ),
                 const Divider(thickness: 2),
                 const Text('DELETE TABLE ROWS'),
-                 ElevatedButton(
-                    onPressed: deleteTableRows, child: const Text('delete Table Rows')),
+                ElevatedButton(
+                    onPressed: deleteTableRows,
+                    child: const Text('delete Table Rows')),
                 const Divider(thickness: 2),
-                Text('LOCAL STATE',style: Theme.of(context).textTheme.headline4),
-                 ElevatedButton(onPressed: getDogsFromList, child: const Text('Get List')),
-                 const ElevatedButton(onPressed: addToDogList, child: Text('Add to List')),
-                 const ElevatedButton(onPressed: clearList, child: Text('Clear List')),
+                Text('LOCAL STATE',
+                    style: Theme.of(context).textTheme.headline4),
+                ElevatedButton(
+                    onPressed: getDogsFromList, child: const Text('Get List')),
+                const ElevatedButton(
+                    onPressed: addToDogList, child: Text('Add to List')),
+                const ElevatedButton(
+                    onPressed: clearList, child: Text('Clear List')),
                 const Divider(thickness: 2),
-                Text('BUILD LIST',style: Theme.of(context).textTheme.headline4),
-                buildList(),
               ],
             ),
           ),
@@ -211,11 +231,10 @@ class _MyHomePageState extends State<MyHomePage> {
 // WIDGET FUNCTIONS, which returns a widget that's rendered in the view.
 //-----------------------------------------------------------------------
 
-  Widget buildList(){
+  Widget buildList() {
     if (dogs.isEmpty) {
       return const Text('Empty List');
-    }
-    else {
+    } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -237,8 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       trailing: Text('${dogs[index].age}'),
                     ),
                   );
-                }
-            ),
+                }),
           ),
         ],
       );
@@ -294,8 +312,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> deleteTableRows() async {
     DogDatabase.instance.deleteRows();
   }
-
-
 }
 
 //-----------------------------------------------------------------------
@@ -321,7 +337,3 @@ Future<void> addToDogList() async {
 
   print('added to list - list length ${dogs.length}');
 }
-
-
-
-
