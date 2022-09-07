@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'database.dart';
 import 'data_model.dart';
 
-var fido = const Dog(id: 0, name: 'Fido', age: 35);
-var gongo = const Dog(id: 1, name: 'Gongo', age: 9);
-var longo = const Dog(id: 2, name: 'Longo', age: 15);
+var fido = const Dog(id: 0, name: 'Fido', age: 9);
+var gongo = const Dog(id: 1, name: 'Gongo', age: 5);
+var longo = const Dog(id: 2, name: 'Longo', age: 3);
+var bongo = const Dog(id: 3, name: 'Bongo', age: 1);
+
+List dogs = [];
 
 Future<void> main() async {
   // Avoid errors caused by flutter upgrade.
@@ -95,6 +98,8 @@ Future<void> main() async {
 
   //check current dog table
   print(await DogDatabase.instance.dogs());
+  //query from DB then add to local state on app run
+  addToDogList();
 
   runApp(const MyApp());
 }
@@ -132,90 +137,191 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: IntrinsicHeight(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Divider(thickness: 2),
-              const Text('CREATE'),
-              SizedBox(
-                height: 50,
-                child:
-                    ListView(scrollDirection: Axis.horizontal, children: const [
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                          onPressed: addFido, child: Text('add Fido'))),
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                          onPressed: addGongo, child: Text('add Gongo'))),
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                          onPressed: addLongo, child: Text('add Longo'))),
-                ]),
-              ),
-              const Divider(thickness: 2),
-              const Text('READ'),
-              const ElevatedButton(
-                  onPressed: getDogs, child: Text('Retrieve Dogs Fn - dogs()')),
-              const Divider(thickness: 2),
-              const Text('UPDATE'),
-              const ElevatedButton(
-                  onPressed: updateFido, child: Text('update Fido')),
-              const Divider(thickness: 2),
-              const Text('DELETE'),
-              const ElevatedButton(
-                  onPressed: deleteFido, child: Text('delete Fido')),
-              const Divider(thickness: 2),
-              const Text('DELETE TABLE ROWS'),
-              const ElevatedButton(
-                  onPressed: deleteTableRows, child: Text('delete Table Rows')),
-              const Divider(thickness: 2),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.only(top:8.0, bottom: 8.0, left: 16.0,right: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('SQFLITE',style: Theme.of(context).textTheme.headline4),
+                const Text('CREATE'),
+                SizedBox(
+                  height: 50,
+                  child:
+                      ListView(
+                          scrollDirection: Axis.horizontal,
+                          children:  [
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: addFido, child: const Text('add Fido'))),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: addGongo, child: const Text('add Gongo'))),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: addLongo, child: const Text('add Longo'))),
+                        Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                                onPressed: addBongo, child: const Text('add Bongo'))),
+                  ]),
+                ),
+                const Divider(thickness: 2),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                  Column(children: [const Text('READ'),
+                    ElevatedButton(
+                        onPressed: getDogsFromDB, child: const Text('Get List DB')),],),
+                  Column(children: [
+                    const Text('UPDATE'),
+                    ElevatedButton(
+                        onPressed: updateFido, child: const Text('update Fido')),
+                  ],),
+                    Column(children: [
+                      const Text('DELETE'),
+                      ElevatedButton(
+                          onPressed: deleteFido, child: const Text('delete Fido')),
+                    ],)
+                ],),
+                const Divider(thickness: 2),
+                const Text('DELETE TABLE ROWS'),
+                 ElevatedButton(
+                    onPressed: deleteTableRows, child: const Text('delete Table Rows')),
+                const Divider(thickness: 2),
+                Text('LOCAL STATE',style: Theme.of(context).textTheme.headline4),
+                 ElevatedButton(onPressed: getDogsFromList, child: const Text('Get List')),
+                 const ElevatedButton(onPressed: addToDogList, child: Text('Add to List')),
+                 const ElevatedButton(onPressed: clearList, child: Text('Clear List')),
+                const Divider(thickness: 2),
+                Text('BUILD LIST',style: Theme.of(context).textTheme.headline4),
+                buildList(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+//-----------------------------------------------------------------------
+// WIDGET FUNCTIONS, which returns a widget that's rendered in the view.
+//-----------------------------------------------------------------------
+
+  Widget buildList(){
+    if (dogs.isEmpty) {
+      return const Text('Empty List');
+    }
+    else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('ListView.builder + ListTile'),
+          ),
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: dogs.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    elevation: 8,
+                    child: ListTile(
+                      leading: Text('${dogs[index].id}'),
+                      title: Text('${dogs[index].name}'),
+                      trailing: Text('${dogs[index].age}'),
+                    ),
+                  );
+                }
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+//-----------------------------------------------------------------------
+// VOID FUNCTIONS, which perform logical actions, change state, etc.
+//-----------------------------------------------------------------------
+
+  void getDogsFromList() {
+    setState(() {});
+    print('GET FROM LIST -- ${dogs.toString()}');
+  }
+
+  Future<void> getDogsFromDB() async {
+    setState(() {});
+    print('GET FROM DB --- ${await DogDatabase.instance.dogs()}');
+  }
+
+  Future<void> addBongo() async {
+    // CREATE A DOG - BONGO
+    await DogDatabase.instance.insertDog(bongo);
+  }
+
+  Future<void> addLongo() async {
+    // CREATE A DOG - Longo
+    await DogDatabase.instance.insertDog(longo);
+  }
+
+  Future<void> addGongo() async {
+    // CREATE A DOG - GONGO
+    await DogDatabase.instance.insertDog(gongo);
+  }
+
+  Future<void> addFido() async {
+    // CREATE A DOG - FIDO
+    await DogDatabase.instance.insertDog(fido);
+  }
+
+  Future<void> deleteFido() async {
+    // DELETE A DOG -- FIDO
+    await DogDatabase.instance.deleteDog(fido.id);
+  }
+
+  Future<void> updateFido() async {
+    // UPDATE A DOG -- FIDO
+    fido = Dog(id: fido.id, name: fido.name, age: fido.age + 7);
+    setState(() {});
+    await DogDatabase.instance.updateDog(fido);
+  }
+
+  Future<void> deleteTableRows() async {
+    DogDatabase.instance.deleteRows();
+  }
+
+
 }
 
-//--------------------------------------------------------
-// VOID FUNCTIONS
-//--------------------------------------------------------
+//-----------------------------------------------------------------------
+// GLOBAL VOID FUNCTIONS, which perform logical actions, change state, etc.
+//-----------------------------------------------------------------------
 
-Future<void> getDogs() async {
-  print(await DogDatabase.instance.dogs());
+Future<void> clearList() async {
+  dogs.clear();
+  print('Clear list - list length ${dogs.length}');
 }
 
-Future<void> addLongo() async {
-  // CREATE A DOG - Longo
-  await DogDatabase.instance.insertDog(longo);
+Future<void> addToDogList() async {
+  //clear list in the beginning to make sure only getting items from DB
+  clearList();
+
+  // get list from DB query
+  var result = await DogDatabase.instance.dogs();
+
+  // iterate and add each element of result then add to local state list
+  for (var element in result) {
+    dogs.add(element);
+  }
+
+  print('added to list - list length ${dogs.length}');
 }
 
-Future<void> addGongo() async {
-  // CREATE A DOG - GONGO
-  await DogDatabase.instance.insertDog(gongo);
-}
 
-Future<void> addFido() async {
-  // CREATE A DOG - FIDO
-  await DogDatabase.instance.insertDog(fido);
-}
 
-Future<void> deleteFido() async {
-  // DELETE A DOG -- FIDO
-  await DogDatabase.instance.deleteDog(fido.id);
-}
 
-Future<void> updateFido() async {
-  // UPDATE A DOG -- FIDO
-  fido = Dog(id: fido.id, name: fido.name, age: fido.age + 7);
-  await DogDatabase.instance.updateDog(fido);
-}
-
-Future<void> deleteTableRows() async {
-  DogDatabase.instance.deleteRows();
-}
-
-Future<void> getDogs2() async {}

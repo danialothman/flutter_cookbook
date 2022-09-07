@@ -9,7 +9,7 @@ class DogDatabase {
   static Database? _database;
   DogDatabase._init();
 
-  // getter - ???
+  // database reference getter
   Future<Database> get database async {
     if (_database != null) return _database!;
 
@@ -65,15 +65,15 @@ class DogDatabase {
     // Get a reference to the database.
     final db = await database;
 
-    // Query the table for all The Dogs.
-    final List<Map<String, dynamic>> maps = await db.query('dogs');
+    // Query the table for all The Dogs, which is of type Map.
+    final List<Map<String, dynamic>> result = await db.query('dogs');
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
-    return List.generate(maps.length, (i) {
+    return List.generate(result.length, (i) {
       return Dog(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-        age: maps[i]['age'],
+        id: result[i]['id'],
+        name: result[i]['name'],
+        age: result[i]['age'],
       );
     });
   }
