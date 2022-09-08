@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'data_model.dart';
 
 class DogDatabase {
+  // Create Singleton for instance
   static final DogDatabase instance = DogDatabase._init();
   static Database? _database;
   DogDatabase._init();
@@ -22,10 +23,19 @@ class DogDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(
+        // Set the path to the database. Note: Using the `join` function from the
+        // `path` package is best practice to ensure the path is correctly
+        // constructed for each platform. see var path above.
+        path,
+        // Set the version. This executes the onCreate function and provides a
+        // path to perform database upgrades and downgrades.
+        version: 1,
+        // When the database is first created, create a table to store dogs.
+        onCreate: _createDB);
   }
 
-  //  create DB
+  // create DB
   Future _createDB(Database db, int version) async {
     print('************ CREATING TABLE DOGS ************');
 
@@ -38,20 +48,18 @@ class DogDatabase {
     ''');
   }
 
-  // CRUD FUNCTIONS
-  // CRUD FUNCTIONS
-  // CRUD FUNCTIONS
+//-----------------------------------------------------------------------
+// CRUD FUNCTIONS
+//-----------------------------------------------------------------------
 
   // INSERT DATA
   Future<void> insertDog(Dog dog) async {
     print('INSERT DOG Fn');
-
     // Get a reference to the database.
     final db = await database;
 
     // Insert the Dog into the correct table. You might also specify the
     // `conflictAlgorithm` to use in case the same dog is inserted twice.
-    //
     // In this case, replace any previous data.
     await db.insert('dogs', dog.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -59,9 +67,8 @@ class DogDatabase {
 
   // READ DATA
   // A method that retrieves all the dogs from the dogs table.
-  Future<List<Dog>> dogs() async {
-    print('RETRIEVE DOGS Fn');
-
+  Future<List<Dog>> readAllDogs() async {
+    print('readAllDogs() - START');
     // Get a reference to the database.
     final db = await database;
 
@@ -80,8 +87,7 @@ class DogDatabase {
 
   // UPDATE A DOG
   Future<void> updateDog(Dog dog) async {
-    print('UPDATE DOG Fn');
-
+    print('updateDog() - START');
     final db = await database;
 
     await db.update(
@@ -94,8 +100,7 @@ class DogDatabase {
 
   // DELETE DOG
   Future<void> deleteDog(int id) async {
-    print('DELETE DOG Fn');
-
+    print('deleteDog() - START');
     final db = await database;
 
     await db.delete(
@@ -107,8 +112,7 @@ class DogDatabase {
 
   // DELETE ROWS, preserves table
   Future<void> deleteRows() async {
-    print('DELETE ROWS');
-
+    print('deleteRows() - START');
     final db = await database;
 
     await db.execute('DELETE FROM dogs');
