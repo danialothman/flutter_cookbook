@@ -44,19 +44,34 @@ class _MyAppState extends State<MyApp> {
       title: 'Fetch Data Example',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: Scaffold(
-        appBar: AppBar(title: const Text('Fetch Data Example'),),
-        body: Center(child: FutureBuilder<Album>(
-            future: futureAlbum,
-            builder: (context,snapshot){
-              if (snapshot.hasData){
-                return Text(snapshot.data!.title);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
+        appBar: AppBar(
+          title: const Text('Fetch Data Example'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FutureBuilder<Album>(
+                  future: futureAlbum,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: [
+                          Text('User ID: ${snapshot.data!.userId.toString()}'),
+                          Text('ID: ${snapshot.data!.id.toString()}'),
+                          Text('Title: ${snapshot.data!.title}'),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
 
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            }),
+                    // By default, show a loading spinner.
+                    return const CircularProgressIndicator();
+                  }),
+              ElevatedButton(onPressed: () {}, child: const Text('Fetch'))
+            ],
+          ),
         ),
       ),
     );
